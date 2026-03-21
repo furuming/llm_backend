@@ -1,0 +1,25 @@
+[project]
+name = "voice-transcription-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "sqlalchemy>=2.0.0",
+  "pymysql>=1.1.1",
+  "alembic>=1.13.0",
+  "pydantic>=2.8.0",
+  "pydantic-settings>=2.4.0",
+  "email-validator>=2.2.0",
+  "cryptography>=46.0.5",
+  "ulid-py>=1.1.0",
+  "httpx>=0.28.1",
+]
+
+[tool.uv]
+dev-dependencies = [
+  "pytest>=8.0.0",
+  "ruff>=0.6.0",
+]
