@@ -16,7 +16,9 @@ from alembic import context
 
 from core.config import get_settings
 from core.db import Base
-from infrastructure.db.models.user_model import UserModel  # noqa: F401
+from modules.user.infrastructure.db.models.user_model import UserModel  # noqa: F401
+from modules.chat.infrastructure.models import ChatMessageModel  # noqa: F401
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

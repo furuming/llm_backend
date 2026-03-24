@@ -31,12 +31,7 @@ email: Mapped[str] = mapped_column(String(255), nullable=False)
 
 ### 2. Migrationファイル生成
 ```bash
-uv run alembic revision --autogenerate -m "add email to users"
-```
-
-### 3. Migrationファイル生成
-```bash
-uv run alembic revision --autogenerate -m "add email to users"
+uv run alembic revision --autogenerate -m "add chat table"
 ```
 チェックポイント
 不要な変更が含まれていないか
