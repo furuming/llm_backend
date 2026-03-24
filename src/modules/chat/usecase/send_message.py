@@ -6,11 +6,13 @@ from src.shared.kernel.id.generator import IDGenerator
 
 class SendMessageUseCase:
     def __init__(self, repository: ChatRepository, id_generator: IDGenerator):
+        """メッセージ保存先と ID 生成器を受け取って初期化する。"""
         self.repository = repository
         self.id_generator = id_generator
         
 
     def execute(self, user_id: str, message: str, model: str) -> str:
+        """ユーザーメッセージを保存し、LLM 応答を生成して返す。"""
         user_message = ChatMessage(
             id=self.id_generator.generate(),
             user_id=user_id,

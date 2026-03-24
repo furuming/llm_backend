@@ -11,12 +11,14 @@ class LocalLLMClient(BaseLLMClient):
         timeout_sec: float | None = None,
         model_name: str | None = None,
     ) -> None:
+        """ローカル LLM 接続に必要な設定値を初期化する。"""
         settings = get_settings()
         self.base_url = (base_url or settings.local_llm_base_url).rstrip("/")
         self.timeout_sec = timeout_sec or settings.local_llm_timeout_sec
         self.model_name = model_name or settings.local_llm_model_name
 
     def generate(self, *, user_message: str, system_prompt: str | None = None) -> str:
+        """ローカル LLM にプロンプトを送信し、生成テキストを返す。"""
         messages: list[dict[str, str]] = []
 
         if system_prompt:

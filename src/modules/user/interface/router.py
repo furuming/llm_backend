@@ -19,6 +19,7 @@ def create_user(
     request: CreateUserRequest,
     session: Session = Depends(get_db_session),
 ) -> UserResponse:
+    """ユーザーを新規作成し、API レスポンス形式で返す。"""
     usecase = get_create_user_usecase(session)
     user = usecase.execute(
         name=request.name,
@@ -37,6 +38,7 @@ def get_user(
     user_id: int,
     session: Session = Depends(get_db_session),
 ) -> UserResponse:
+    """ユーザー ID をもとに単一ユーザーを取得して返す。"""
     usecase = get_get_user_usecase(session)
     user = usecase.execute(user_id)
 

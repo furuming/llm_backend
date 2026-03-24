@@ -12,6 +12,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 @router.post("", response_model=ChatResponse)
 def chat(req: ChatRequest, db: Session = Depends(get_db)):
+    """チャット要求を受け取り、生成された応答を返す。"""
 
     print(req)
 

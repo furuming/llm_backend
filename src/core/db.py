@@ -23,6 +23,7 @@ SessionLocal = sessionmaker(
 
 
 def get_db():
+    """アプリ共通の DB セッションを提供して後始末する。"""
     db = SessionLocal()
     try:
         yield db

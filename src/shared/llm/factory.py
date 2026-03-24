@@ -4,6 +4,7 @@ from src.shared.llm.openai_client import OpenAIClient
 
 
 def get_llm_client(model: str) -> BaseLLMClient:
+    """モデル名に応じた LLM クライアント実装を返す。"""
     if model == "openai":
         return OpenAIClient()
     if model == "local":

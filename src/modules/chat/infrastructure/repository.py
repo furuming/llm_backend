@@ -6,9 +6,11 @@ from src.modules.chat.infrastructure.models import ChatMessageModel
 
 class ChatRepository:
     def __init__(self, db: Session):
+        """初期化時に使用する DB セッションを保持する。"""
         self.db = db
 
     def save(self, message: ChatMessage) -> ChatMessage:
+        """チャットメッセージを永続化し、保存結果をドメインモデルで返す。"""
         row = ChatMessageModel(
             id=message.id,
             user_id=message.user_id,
@@ -29,6 +31,7 @@ class ChatRepository:
         )
 
     def list_by_user_id(self, user_id: str, limit: int = 50) -> list[ChatMessage]:
+        """指定ユーザーのメッセージ履歴を古い順で取得する。"""
         rows = (
             self.db.query(ChatMessageModel)
             .filter(ChatMessageModel.user_id == user_id)

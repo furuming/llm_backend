@@ -19,4 +19,5 @@ class Settings(BaseSettings):
 
 
 def get_settings() -> Settings:
+    """環境変数を反映した設定オブジェクトを生成する。"""
     return Settings()

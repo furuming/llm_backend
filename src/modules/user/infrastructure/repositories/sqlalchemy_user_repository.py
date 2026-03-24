@@ -6,9 +6,11 @@ from src.infrastructure.db.models.user_model import UserModel
 
 class SqlAlchemyUserRepository:
     def __init__(self, session: Session) -> None:
+        """SQLAlchemy セッションを保持して初期化する。"""
         self.session = session
 
     def create(self, user: User) -> User:
+        """ユーザーを DB に保存し、保存後のドメインモデルを返す。"""
         db_user = UserModel(
             name=user.name,
             email=user.email,
@@ -25,6 +27,7 @@ class SqlAlchemyUserRepository:
         )
 
     def find_by_id(self, user_id: int) -> User | None:
+        """主キーでユーザーを検索し、見つかれば返す。"""
         db_user = self.session.get(UserModel, user_id)
         if db_user is None:
             return None
