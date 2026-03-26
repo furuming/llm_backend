@@ -1,5 +1,4 @@
 from datetime import datetime
-from uuid import uuid5, NAMESPACE_URL
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -34,7 +33,7 @@ class QdrantVectorStore(VectorStoreRepository):
         point_ids: list[str] = []
 
         for chunk, embedding in zip(chunks, embeddings, strict=False):
-            point_id = chunk.qdrant_point_id or self._build_point_id(chunk)
+            point_id = self._resolve_point_id(chunk)
             points.append(
                 models.PointStruct(
                     id=point_id,
@@ -42,7 +41,7 @@ class QdrantVectorStore(VectorStoreRepository):
                     payload=self._chunk_to_payload(chunk),
                 )
             )
-            point_ids.append(point_id)
+            point_ids.append(str(point_id))
 
         if points:
             self._client.upsert(collection_name=self._collection_name, points=points)
@@ -71,12 +70,16 @@ class QdrantVectorStore(VectorStoreRepository):
         )
 
     @staticmethod
-    def _build_point_id(chunk: Chunk) -> str:
-        source = (
-            f'{chunk.upload_file_id}:{chunk.raw_text_id}:{chunk.chunk_index}:'
-            f'{chunk.start_offset}:{chunk.end_offset}:{chunk.text}'
-        )
-        return str(uuid5(NAMESPACE_URL, source))
+    def _build_point_id(chunk: Chunk) -> int:
+        if chunk.id is None:
+            raise ValueError('Chunk ID is required before upserting to Qdrant.')
+        return int(chunk.id)
+
+    @staticmethod
+    def _resolve_point_id(chunk: Chunk) -> int:
+        if chunk.qdrant_point_id:
+            return int(chunk.qdrant_point_id)
+        return QdrantVectorStore._build_point_id(chunk)
 
     @staticmethod
     def _chunk_to_payload(chunk: Chunk) -> dict[str, str | int | None]:
