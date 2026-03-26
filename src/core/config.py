@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     rag_qdrant_api_key: str | None = None
     rag_qdrant_timeout_sec: float = 10.0
 
+    chat_use_rag_default: bool = False
+    chat_rag_top_k_default: int = 5
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

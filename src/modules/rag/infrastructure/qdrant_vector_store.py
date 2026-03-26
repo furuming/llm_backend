@@ -49,13 +49,13 @@ class QdrantVectorStore(VectorStoreRepository):
 
     def search(self, query_embedding: list[float], top_k: int = 5) -> list[RetrievedChunk]:
         """クエリ埋め込みに類似するチャンクを Qdrant から検索する。"""
-        results = self._client.search(
+        response = self._client.query_points(
             collection_name=self._collection_name,
-            query_vector=query_embedding,
+            query=query_embedding,
             limit=top_k,
             with_payload=True,
         )
-        return [self._to_retrieved_chunk(result) for result in results]
+        return [self._to_retrieved_chunk(result) for result in response.points]
 
     def _ensure_collection(self) -> None:
         if self._client.collection_exists(self._collection_name):

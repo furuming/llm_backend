@@ -19,27 +19,11 @@ class LocalLLMClient(BaseLLMClient):
 
     def generate(self, *, user_message: str, system_prompt: str | None = None) -> str:
         """ローカル LLM にプロンプトを送信し、生成テキストを返す。"""
-        messages: list[dict[str, str]] = []
-
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-
-        messages.append({"role": "user", "content": user_message})
-
+        prompt = self._build_prompt(user_message=user_message, system_prompt=system_prompt)
         payload = {
-            # "model": self.model_name,
-            # "messages": messages,
-            # "generation_config": {
-            #     # Gemma系で無難な初期値
-            #     "max_new_tokens": 2048,
-            #     "temperature": 0.7,
-            #     "top_p": 0.95,
-            #     "do_sample": True,
-            #     "repetition_penalty": 1.05,
-            # },
-            "prompt": user_message,
+            "prompt": prompt,
             "max_new_tokens": 2048,
-            "temperature": 0.7
+            "temperature": 0.7,
         }
 
         with httpx.Client(timeout=self.timeout_sec) as client:
@@ -47,10 +31,14 @@ class LocalLLMClient(BaseLLMClient):
             response.raise_for_status()
             data = response.json()
 
-        # 返却形式はサーバ側に合わせて調整
-        # 例: {"text": "..."} を想定
         text = data.get("text")
         if not isinstance(text, str) or not text.strip():
             raise ValueError(f"Invalid local LLM response: {data}")
 
         return text
+
+    @staticmethod
+    def _build_prompt(*, user_message: str, system_prompt: str | None) -> str:
+        if not system_prompt:
+            return user_message
+        return f"{system_prompt}\n\nUser: {user_message}\nAssistant:"
