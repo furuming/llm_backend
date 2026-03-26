@@ -96,7 +96,7 @@ class IndexDocumentUseCase:
         saved_chunks = self.chunk_repository.save_chunks(chunks)
 
         if saved_chunks:
-            embeddings = self.embedder.embed([chunk.text for chunk in saved_chunks])
+            embeddings = self.embedder.embed_documents([chunk.text for chunk in saved_chunks])
             point_ids = self.vector_store_repository.upsert_chunks(saved_chunks, embeddings)
             self.chunk_repository.attach_point_ids(
                 [

@@ -2,8 +2,9 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
+from src.core.config import Settings, get_settings
 from src.core.models import ChunkModel, RawTextModel, UploadFileModel
-from src.modules.rag.infrastructure.embedding_gateway import EmbeddingGateway
+from src.modules.rag.infrastructure.embedder_factory import build_embedder
 from src.modules.rag.infrastructure.liteparse_parser import LiteParseParser
 from src.modules.rag.infrastructure.qdrant_vector_store import QdrantVectorStore
 from src.modules.rag.models.chunk import Chunk
@@ -191,7 +192,7 @@ class RagRetriever(Retriever):
 
     def retrieve(self, query: str, top_k: int = 5) -> list[RetrievedChunk]:
         """クエリ埋め込みを使って関連チャンクを検索する。"""
-        embedding = self.embedder.embed([query])[0]
+        embedding = self.embedder.embed_query(query)
         return self.vector_store_repository.search(embedding, top_k=top_k)
 
 
@@ -220,12 +221,13 @@ class RagUseCases:
     retrieve_chunks: RetrieveChunksUseCase
 
 
-def build_rag_usecases(session: Session) -> RagUseCases:
+def build_rag_usecases(session: Session, settings: Settings | None = None) -> RagUseCases:
     """RAG ユースケース群を依存込みで組み立てる。"""
+    resolved_settings = settings or get_settings()
     parser = LiteParseParser()
     chunker = SimpleChunker()
-    embedder = EmbeddingGateway()
-    vector_store = QdrantVectorStore()
+    embedder = build_embedder(resolved_settings)
+    vector_store = QdrantVectorStore(resolved_settings, embedder.dimensions)
     raw_text_repository = SqlAlchemyRawTextRepository(session)
     chunk_repository = SqlAlchemyChunkRepository(session)
     retriever = RagRetriever(embedder, vector_store)
