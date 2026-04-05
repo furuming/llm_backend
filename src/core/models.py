@@ -5,7 +5,7 @@ from sqlalchemy.dialects import mysql
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.db import Base
-from src.modules.chat.infrastructure.models import ChatMessageModel
+from src.modules.chat.infrastructure.models import ChatMessageModel, ChatProjectModel, ChatRoomModel
 
 LONG_TEXT = Text().with_variant(mysql.LONGTEXT(), 'mysql')
 
@@ -53,4 +53,11 @@ class ChunkModel(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
 
-__all__ = ['ChatMessageModel', 'UploadFileModel', 'RawTextModel', 'ChunkModel']
+__all__ = [
+    'ChatMessageModel',
+    'ChatProjectModel',
+    'ChatRoomModel',
+    'UploadFileModel',
+    'RawTextModel',
+    'ChunkModel',
+]

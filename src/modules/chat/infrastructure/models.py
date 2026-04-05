@@ -1,9 +1,42 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.db import Base
+
+
+class ChatProjectModel(Base):
+    __tablename__ = "chat_projects"
+
+    id: Mapped[str] = mapped_column(String(26), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+    )
+
+
+class ChatRoomModel(Base):
+    __tablename__ = "chat_rooms"
+
+    id: Mapped[str] = mapped_column(String(26), primary_key=True)
+    project_id: Mapped[str] = mapped_column(
+        String(26),
+        ForeignKey("chat_projects.id"),
+        index=True,
+        nullable=False,
+    )
+    user_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+    )
 
 
 class ChatMessageModel(Base):
@@ -11,8 +44,15 @@ class ChatMessageModel(Base):
 
     id: Mapped[str] = mapped_column(String(26), primary_key=True)
     user_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
-    role: Mapped[str] = mapped_column(String(20), nullable=False)  # user / assistant / system
+    room_id: Mapped[str | None] = mapped_column(
+        String(26),
+        ForeignKey("chat_rooms.id"),
+        index=True,
+        nullable=True,
+    )
+    role: Mapped[str] = mapped_column(String(20), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
+    model: Mapped[str] = mapped_column(String(100), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow,

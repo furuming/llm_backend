@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from src.modules.chat.domain.entities import ChatMessage
 from src.modules.chat.infrastructure.repository import ChatRepository
 from src.modules.chat.services.context_provider import ContextProvider, RetrievedContext
-from src.shared.llm.base import BaseLLMClient
 from src.shared.kernel.id.generator import IDGenerator
+from src.shared.llm.base import BaseLLMClient
 
 
 @dataclass
@@ -14,6 +14,7 @@ class SendMessageResult:
     reply: str
     used_rag: bool
     retrieved_chunk_count: int
+    room_id: str | None
 
 
 class SendMessageUseCase:
@@ -36,6 +37,7 @@ class SendMessageUseCase:
         message: str,
         model: str,
         *,
+        room_id: str | None = None,
         use_rag: bool = False,
         rag_top_k: int = 5,
     ) -> SendMessageResult:
@@ -43,6 +45,7 @@ class SendMessageUseCase:
         user_message = ChatMessage(
             id=self.id_generator.generate(),
             user_id=user_id,
+            room_id=room_id,
             role="user",
             model=model,
             content=message,
@@ -59,6 +62,7 @@ class SendMessageUseCase:
         assistant_message = ChatMessage(
             id=self.id_generator.generate(),
             user_id=user_id,
+            room_id=room_id,
             role="assistant",
             model=model,
             content=reply,
@@ -69,6 +73,7 @@ class SendMessageUseCase:
             reply=reply,
             used_rag=bool(retrieved_context.context),
             retrieved_chunk_count=retrieved_context.chunk_count,
+            room_id=room_id,
         )
 
     def _fetch_context(self, message: str, *, use_rag: bool, rag_top_k: int) -> RetrievedContext:
