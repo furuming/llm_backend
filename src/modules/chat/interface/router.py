@@ -122,6 +122,8 @@ def list_room_messages(
             role=message.role,
             content=message.content,
             model=message.model,
+            used_rag=message.used_rag,
+            retrieved_chunk_count=message.retrieved_chunk_count,
             created_at=message.created_at,
         )
         for message in messages

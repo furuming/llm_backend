@@ -42,6 +42,10 @@ class SendMessageUseCase:
         rag_top_k: int = 5,
     ) -> SendMessageResult:
         """ユーザーメッセージを保存し、必要に応じて RAG を使って応答を生成する。"""
+        retrieved_context = self._fetch_context(message, use_rag=use_rag, rag_top_k=rag_top_k)
+        used_rag = bool(retrieved_context.context)
+        retrieved_chunk_count = retrieved_context.chunk_count
+
         user_message = ChatMessage(
             id=self.id_generator.generate(),
             user_id=user_id,
@@ -49,10 +53,11 @@ class SendMessageUseCase:
             role="user",
             model=model,
             content=message,
+            used_rag=used_rag,
+            retrieved_chunk_count=retrieved_chunk_count,
         )
         self.repository.save(user_message)
 
-        retrieved_context = self._fetch_context(message, use_rag=use_rag, rag_top_k=rag_top_k)
         system_prompt = self._build_system_prompt(retrieved_context)
         reply = self.llm_client.generate(
             user_message=message,
@@ -66,13 +71,15 @@ class SendMessageUseCase:
             role="assistant",
             model=model,
             content=reply,
+            used_rag=used_rag,
+            retrieved_chunk_count=retrieved_chunk_count,
         )
         self.repository.save(assistant_message)
 
         return SendMessageResult(
             reply=reply,
-            used_rag=bool(retrieved_context.context),
-            retrieved_chunk_count=retrieved_context.chunk_count,
+            used_rag=used_rag,
+            retrieved_chunk_count=retrieved_chunk_count,
             room_id=room_id,
         )
 

@@ -114,6 +114,8 @@ class ChatRepository:
             role=message.role,
             content=message.content,
             model=message.model,
+            used_rag=message.used_rag,
+            retrieved_chunk_count=message.retrieved_chunk_count,
         )
         self.db.add(row)
         self.db.commit()
@@ -126,6 +128,8 @@ class ChatRepository:
             role=row.role,
             content=row.content,
             model=row.model,
+            used_rag=row.used_rag,
+            retrieved_chunk_count=row.retrieved_chunk_count,
             created_at=row.created_at,
         )
 
@@ -147,6 +151,8 @@ class ChatRepository:
                 role=row.role,
                 content=row.content,
                 model=row.model,
+                used_rag=row.used_rag,
+                retrieved_chunk_count=row.retrieved_chunk_count,
                 created_at=row.created_at,
             )
             for row in reversed(rows)
@@ -168,6 +174,8 @@ class ChatRepository:
                 role=row.role,
                 content=row.content,
                 model=row.model,
+                used_rag=row.used_rag,
+                retrieved_chunk_count=row.retrieved_chunk_count,
                 created_at=row.created_at,
             )
             for row in reversed(rows)

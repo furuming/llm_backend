@@ -35,7 +35,7 @@ class ChatRequest(BaseModel):
     user_id: str
     room_id: str | None = None
     message: str
-    model: str
+    model: str = Field(description='LLM family name such as gemma, llama, or gpt-4o-mini')
     use_rag: bool | None = None
     rag_top_k: int | None = Field(default=None, ge=1, le=20)
 
@@ -54,4 +54,6 @@ class MessageResponse(BaseModel):
     role: str
     content: str
     model: str
+    used_rag: bool
+    retrieved_chunk_count: int
     created_at: datetime

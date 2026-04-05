@@ -165,6 +165,8 @@ project
 
 - room が存在しない場合は `404 Room not found`
 - 返却順は古いメッセージから新しいメッセージの順
+- 各 message には、その送信時に RAG を使ったかどうかと、取得した chunk 数が含まれる
+- `model` には transport 名ではなく LLM ファミリー名が入る
 
 ### Response
 
@@ -176,7 +178,9 @@ project
     "room_id": "01JQEXAMPLEROOM00000000001",
     "role": "user",
     "content": "要件定義の叩き台を作って",
-    "model": "gpt-4o-mini",
+    "model": "gemma",
+    "used_rag": true,
+    "retrieved_chunk_count": 3,
     "created_at": "2026-04-05T00:11:00"
   },
   {
@@ -185,7 +189,9 @@ project
     "room_id": "01JQEXAMPLEROOM00000000001",
     "role": "assistant",
     "content": "まず目的、対象ユーザー、主要機能の3点から整理します。",
-    "model": "gpt-4o-mini",
+    "model": "gemma",
+    "used_rag": true,
+    "retrieved_chunk_count": 3,
     "created_at": "2026-04-05T00:11:02"
   }
 ]
@@ -202,7 +208,7 @@ project
   "user_id": "user_001",
   "room_id": "01JQEXAMPLEROOM00000000001",
   "message": "要件定義の論点を5つに整理して",
-  "model": "gpt-4o-mini",
+  "model": "gemma",
   "use_rag": true,
   "rag_top_k": 5
 }
@@ -213,12 +219,15 @@ project
 - `user_id`: 必須
 - `room_id`: 任意
 - `message`: 必須
-- `model`: 必須
+- `model`: 必須。`gemma` や `llama` のような LLM ファミリー名を指定する
 - `use_rag`: 任意
 - `rag_top_k`: 任意、1 以上 20 以下
 
 ### 挙動
 
+- `model` は接続種別ではなくモデルファミリー名として扱う
+- `gemma` や `llama` などは local LLM として処理される
+- `gpt-4o-mini` など `gpt` / `o1` / `o3` / `o4` 系は OpenAI 系として処理される
 - `room_id` を指定しない場合、メッセージは room 非紐づきで保存される
 - `room_id` を指定した場合、その room の所有者チェックを行う
 - room が存在しない場合は `404 Room not found`
@@ -226,6 +235,7 @@ project
 - `use_rag` 未指定時はアプリ設定のデフォルト値を利用する
 - `rag_top_k` 未指定時はアプリ設定のデフォルト値を利用する
 - user message と assistant message の 2 件が保存される
+- 保存された各 message に `used_rag` と `retrieved_chunk_count` が記録される
 
 ### Response
 

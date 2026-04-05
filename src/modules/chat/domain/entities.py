@@ -29,4 +29,6 @@ class ChatMessage:
     role: str
     content: str
     model: str
+    used_rag: bool = False
+    retrieved_chunk_count: int = 0
     created_at: Optional[datetime] = None
