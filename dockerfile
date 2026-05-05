@@ -14,4 +14,12 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 
-COPY . .
+
+# uvインストール
+RUN pip install uv
+
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --system
+
+CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0" ]
